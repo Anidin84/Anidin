@@ -1,31 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Image Classifier</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="your_model.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Screen</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .login-container h1 {
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #555;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #666;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <input type="file" id="imageInput">
-  <button onclick="classifyImage()">Classify</button>
-  <p id="result"></p>
-
-  <script>
-    const model = tf.loadLayersModel('your_model.json');
-
-    function classifyImage() {
-      const imageInput = document.getElementById('imageInput');
-      const image = new Image();
-      image.onload = () => {
-        const tensor = tf.browser.fromPixels(image).resizeNearestNeighbor([224, 224]).expandDims().toFloat();
-        model.predict(tensor).then(predictions => {
-          const topK = predictions.argsort().slice(-5).reverse();
-          const result = document.getElementById('result');
-          result.textContent = `Predicted class: ${topK[0].dataSync()[0]}`;
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <div class="error-message" id="errorMessage"></div>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Simple validation
+            if (email === '' || password === '') {
+                errorMessage.textContent = 'Both fields are required!';
+                return;
+            }
+            
+            // Simulate a login check
+            if (email === 'user@example.com' && password === 'password123') {
+                // Redirect to another page or show content if login is successful
+                alert('Login successful!');
+                window.location.href = 'welcome.html'; // Replace with your actual page
+            } else {
+                errorMessage.textContent = 'Invalid email or password!';
+            }
         });
-      };
-      image.src = URL.createObjectURL(imageInput.files[0]);
-    }
-  </script>
+    </script>
 </body>
 </html>
