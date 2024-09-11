@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Current Location</title>
+  <title>AI Image Classifier</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="your_model.js"></script>
 </head>
 <body>
-  <div id="map" style="width: 100%; height: 400px;"></div>
+  <input type="file" id="imageInput">
+  <button onclick="classifyImage()">Classify</button>
+  <p id="result"></p>
 
   <script>
-    function initMap() {
-      // Create a map object and specify its center to be your current location.
-      var map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 43.6319, lng: -79.3716}, // Replace these coordinates with your actual location
-        zoom: 8
-      });
+    const model = tf.loadLayersModel('your_model.json');
 
-      // Use the Geolocation API to get your current position.
-      navigator.geolocation.getCurrentPosition(function(position) {
-        var lat = position.coords.latitude;
-        var lng = position.coords.longitude;
-
-        // Update the map's center to your current location.
-        map.setCenter({lat: lat, lng: lng});
-      }, function(error) {
-        console.error('Error getting current location:', error);
-      });
+    function classifyImage() {
+      const imageInput = document.getElementById('imageInput');
+      const image = new Image();
+      image.onload = () => {
+        const tensor = tf.browser.fromPixels(image).resizeNearestNeighbor([224, 224]).expandDims().toFloat();
+        model.predict(tensor).then(predictions => {
+          const topK = predictions.argsort().slice(-5).reverse();
+          const result = document.getElementById('result');
+          result.textContent = `Predicted class: ${topK[0].dataSync()[0]}`;
+        });
+      };
+      image.src = URL.createObjectURL(imageInput.files[0]);
     }
   </script>
-
-  <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
 </body>
 </html>
